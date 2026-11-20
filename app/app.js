@@ -11,6 +11,8 @@ import { makeClassifier, transformersEmbedder } from '../lib/ai/intake-ai.js';
 import { facts, templateSitrep } from '../lib/copilot.js';
 import { loadBuildings, scored, summary as bldgSummary, topExposed } from '../lib/buildings.js';
 import { compoundHazard } from '../lib/fire.js';
+import { installIdeas } from './ideas.js?v=1.1.0';
+import { ASSUMPTIONS } from '../lib/risk.js';
 
 const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
 const ANTHROPIC_SDK = 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@1.3.0/+esm';
@@ -79,7 +81,7 @@ const ready = new Promise((resolve) => map.on('load', () => {
     map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; tip.remove(); });
     map.on('mousemove', id, (e) => tip.setLngLat(e.lngLat).setHTML(e.features[0].properties.tip).addTo(map));
   }
-  map.on('click', 'stations', (e) => { tip.remove(); new maplibregl.Popup({ maxWidth: '340px', className: 'card-pop' }).setLngLat(e.lngLat).setHTML(sectorPopup(e.features[0].properties.i)).addTo(map); });
+  map.on('click', 'stations', (e) => { if (state.picking?.()) return; tip.remove(); new maplibregl.Popup({ maxWidth: '340px', className: 'card-pop' }).setLngLat(e.lngLat).setHTML(sectorPopup(e.features[0].properties.i)).addTo(map); });
   resolve();
 }));
 
@@ -338,7 +340,7 @@ const panels = {
       The header buttons set that ratio; planning numbers use the matching (1 − C/L) quantile of the forecast members.</div></div>
       <div class="card"><h4>Synthetic (swap for duty rosters)</h4><div class="small muted">Deployable officers per station (22% vacancy applied), team placement by zone, volunteer pools, district reserves, incident rates in the simulation, citizen reports marked "sim".</div></div>
       <div class="card"><h4>Severity triggers</h4><div class="small">Level 1/2/3 when 1 h, 3 h or 24 h rain at the worst city point exceeds
-      ${b.assumptions.triggers.map((t, i) => `<br>L${i + 1}: ${t[0]} mm/h · ${t[1]} mm/3 h · ${t[2]} mm/24 h · ground ≤ ${b.assumptions.stageM[i + 1]} m HAND floods`).join('')}
+      ${ASSUMPTIONS.triggers.map((t, i) => `<br>L${i + 1}: ${t[0]} mm/h · ${t[1]} mm/3 h · ${t[2]} mm/24 h · ground ≤ ${ASSUMPTIONS.stageM[i + 1]} m HAND floods`).join('')}
       <div class="muted">24 h values are IMD's heavy, very heavy and extremely heavy categories; 1 h values bracket GHMC's stated drain capacity of 12–20 mm/h.</div></div></div>`;
   },
 };
@@ -394,8 +396,9 @@ function actionCard(a) {
 }
 
 function drawPanel() {
-  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === state.tab));
-  $('#panel').innerHTML = panels[state.tab]();
+  document.querySelectorAll('#tabs button, #tabs2 button').forEach((b) => b.classList.toggle('on', b.dataset.t === state.tab));
+  if (!state.plan) return;
+  $('#panel').innerHTML = panels[state.tab]?.() ?? '<p class="muted">Loading…</p>';
   if (state.tab === 'evidence' && !state.sim) {
     setTimeout(() => { state.sim = simulate(state.base, state.forecast, state.raw); if (state.tab === 'evidence') drawPanel(); }, 30);
   }
@@ -421,7 +424,8 @@ async function load() {
     const ai = state.classify && reports.length ? await state.classify(reports.map((r) => r.text)) : null;
     const triaged = triage(reports, state.base.stations, state.base.underpasses, ai);
     const confirmed = new Set(triaged.filter((r) => CONFIRMS.has(r.category) && r.sector != null && r.dupOf == null).map((r) => r.sector));
-    const opts = { costLoss: state.cl, confirmed, offline: new Set(state.offline === '' ? [] : [Number(state.offline)]), noShow: state.noShow, prev: state.prevPairs.get(key) ?? new Map() };
+    for (const s of state.extraConfirmed?.keys() ?? []) confirmed.add(s); // cameras, sensors, gauges, photos, weather stations
+    const opts = { costLoss: state.cl, confirmed, extraVuln: state.extraVuln, offline: new Set(state.offline === '' ? [] : [Number(state.offline)]), noShow: state.noShow, prev: state.prevPairs.get(key) ?? new Map() };
     const p = runPlan(state.base, state.base.hand, forecast, opts);
     state.prevPairs.set(key, new Map(p.designated.map((x) => [x.to, x.from])));
     state.forecast = forecast; state.raw = p; state.opts = opts; state.ai = ai; state.sim = null;
@@ -523,6 +527,10 @@ state.base = { ...base, hand, calibration, intakeEval };
 try { state.approvals = new Map(JSON.parse(localStorage.getItem('surgeforce-audit') ?? '[]')); } catch { /* storage off */ }
 $('#offline').innerHTML += state.base.stations.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
 load();
+// roadmap features (app/ideas.js) install alongside; the plan re-solves once they add facility exposure
+installIdeas({ state, map, ready, panels, drawPanel, load, esc, fc, feat, ll, box, area, fmt, pct, getJSON, TRANSFORMERS })
+  .then((W) => { state.picking = () => !!W.pick; return load(); })
+  .catch((e) => console.error('ideas', e));
 
 // on-device AI for report triage loads in the background; rules cover reports until it is ready
 (async () => {

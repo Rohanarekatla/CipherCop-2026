@@ -36,9 +36,17 @@ Run `npm start` and open http://localhost:8520. A switcher at the bottom of ever
 - **FireSight alert sending is off on static hosting.** Its Twilio and Telegram function (`Aditya/api/notify.js`) needs a Vercel-style server. The page shows alert delivery as unavailable. FireSight's buildings and incidents are generated demo data and are labelled that way.
 - **Left out of this repo:** Malik's three videos (about 200 MB) and zip backups, to respect GitHub size limits. They remain in his original repo.
 
+## Field & fix tools added (branch `submission/field-and-fix`)
+
+Rohan's later SurgeForce work (v0.5, after the copy in `Rohan/`) is merged into the root: the Water flow, Fix-it, Vision, Live data and Safe route tabs (`app/ideas.js`, `lib/water.js`, `lib/vision.js`), the public report page (`report.html`), the server's field-input APIs, NDMA SACHET alerts with an hourly GitHub Action, and the Telangana TGRAC government drainage data (`data/tgrac/`). Also fixed:
+
+- the server crashed on any request whose path starts with `//` (it now answers 400);
+- the Method tab crashed because it read `assumptions` from `base.json`, which has none (this bug was also in `Rohan/`);
+- a browser end-to-end test (`scripts/e2e.mjs`) now opens every tab in CI.
+
 ## Status
 
-- Local run of all three pages checked in a browser. 22 automated tests pass.
+- Local run of all three pages checked in a browser. 32 automated tests and the end-to-end browser test pass.
 - The GitHub Actions workflows (CI, Pages, CodeQL) are in the repo but have not run yet. They run on pull requests and pushes to `main`.
 - All of this work is on the branch `submission/ai-vengers-merge`. `main` is still the initial commit.
 - Not tested: the Claude and Ollama agent paths (they need an API key or a local model) and live forecast mode.

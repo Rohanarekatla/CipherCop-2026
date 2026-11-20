@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report Flooding · SurgeForce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #070b11; --panel: #101a27; --line: #22324a; --text: #e8eef7; --muted: #8fa1b8; --accent: #4fb3ff; --act: #ff4d5e; --ok: #3ccf91; }
+    @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg: #f4f7fb; --panel: #ffffff; --line: #d5deea; --text: #0d1724; --muted: #516276; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, system-ui, sans-serif; }
+    main { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p { margin: 6px 0; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-top: 14px; }
+    label { display: block; font-weight: 600; margin: 12px 0 6px; font-size: 14px; }
+    textarea, select { width: 100%; background: transparent; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px; font: inherit; }
+    textarea { min-height: 110px; resize: vertical; }
+    button, .file { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--text); padding: 10px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+    button.primary { background: #1f6fbf; border-color: #2f86de; color: #fff; width: 100%; margin-top: 16px; padding: 12px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ok { color: var(--ok); } .bad { color: var(--act); }
+    img.preview { max-width: 100%; border-radius: 10px; margin-top: 8px; }
+    .emergency { border-color: var(--act); }
+    ul { padding-left: 18px; margin: 6px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Report flooding in Hyderabad</h1>
+  <p class="muted">Write in English, తెలుగు, हिन्दी or اردو. Your report goes to the flood command centre, where it is read by AI and checked by a person.</p>
+  <div class="card emergency"><b class="bad">Life in danger?</b> Call <b>100</b> or <b>1070</b> first. Do not wait for this form.</div>
+  <form class="card" id="f">
+    <label for="text">What is happening, and where?</label>
+    <textarea id="text" required maxlength="1000" placeholder="e.g. Water up to the knees on the main road near Uppal X Roads, cars stuck"></textarea>
+    <label>Photo (optional)</label>
+    <div class="row"><label class="file" style="margin:0;font-weight:600">Add photo<input type="file" id="photo" accept="image/*" capture="environment" hidden></label>
+      <button type="button" id="loc">Share my location</button></div>
+    <div id="locOut" class="muted"></div>
+    <img id="prev" class="preview" hidden alt="Your photo">
+    <button class="primary" type="submit">Send report</button>
+    <p id="out" class="muted" role="status"></p>
+  </form>
+  <div class="card"><b>Your reports</b><ul id="mine"><li class="muted">None yet.</li></ul>
+    <p class="muted">Your location is used only to place your report, and your photo is resized on this phone before sending.</p></div>
+</main>
+<script>
+  const $ = (s) => document.querySelector(s);
+  let photo = null, lat = null, lon = null;
+  const bc = 'BroadcastChannel' in window ? new BroadcastChannel('surgeforce') : null;
+  const load = () => { try { return JSON.parse(localStorage.getItem('surgeforce-my-reports')) || []; } catch { return []; } };
+  const draw = () => { const m = load(); $('#mine').innerHTML = m.length ? m.slice(-10).reverse().map((r) => `<li>${new Date(r.at).toLocaleString('en-IN')}: ${r.text.replace(/[<>&]/g, '')} <span class="${r.server ? 'ok' : 'muted'}">${r.server ? '· received' : '· sent to the command centre in this browser'}</span></li>`).join('') : '<li class="muted">None yet.</li>'; };
+  draw();
+  $('#photo').addEventListener('change', (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => { const s = Math.min(1, 800 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * s; c.height = im.height * s; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); photo = c.toDataURL('image/jpeg', 0.8); $('#prev').src = photo; $('#prev').hidden = false; }; im.src = r.result; };
+    r.readAsDataURL(f);
+  });
+  $('#loc').addEventListener('click', () => {
+    if (!navigator.geolocation) { $('#locOut').textContent = 'Location is not available on this device.'; return; }
+    $('#locOut').textContent = 'Finding you…';
+    navigator.geolocation.getCurrentPosition((p) => { lat = +p.coords.latitude.toFixed(5); lon = +p.coords.longitude.toFixed(5); $('#locOut').innerHTML = `<span class="ok">Location added</span> (±${Math.round(p.coords.accuracy)} m)`; },
+      () => { $('#locOut').textContent = 'Location not shared. Please name the area in your message.'; }, { enableHighAccuracy: true, timeout: 10000 });
+  });
+  $('#f').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = $('#text').value.trim(); if (!text) return;
+    const report = { text, lat, lon, at: new Date().toISOString() };
+    let server = false;
+    try { const r = await fetch('api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...report, photo }) }); server = r.ok; } catch { /* static hosting: no server */ }
+    if (!server) bc?.postMessage(report);
+    localStorage.setItem('surgeforce-my-reports', JSON.stringify([...load(), { ...report, server }]));
+    $('#out').innerHTML = '<span class="ok">Thank you. Your report was sent.</span>';
+    $('#f').reset(); photo = null; $('#prev').hidden = true; lat = lon = null; $('#locOut').textContent = '';
+    draw();
+  });
+</script>
+</body>
+</html>

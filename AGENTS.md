@@ -136,3 +136,23 @@ Deploy = push `main`; GitHub Pages serves the repo root (`.nojekyll` present). P
 - Agent now has 10 tools; the two new ones are `building_exposure` and `flood_fire_hotspots`.
 - `npm test` runs `test/*.test.js` only (the `Rohan/` copy has its own tests that are not run in CI).
 - Commits: no `Co-Authored-By` or "Generated with" trailers (section 5.8). Commit and push only when asked.
+
+## 13. Field & fix tools (Rohan's v0.5, merged into the root)
+
+```
+app/ideas.js          Second tab row: Water flow, Fix-it, Vision, Live data, Safe route. installIdeas(api) registers
+                      panels and map layers; field inputs confirm a sector through state.extraConfirmed (Map sector -> reason)
+report.html           Public citizen report page -> /api/report, or BroadcastChannel on static hosting
+lib/water.js          buildFlow (priority-flood + D8 + accumulation), trace, catchment, deadEnds, bottlenecks, lakeBreach,
+                      drainOverflow (rational method, 12 mm/h), facilityExposure, rankEncroachments, afterFlood, learn,
+                      officialValidation, narrowSegments (TGRAC government data)
+lib/vision.js         CLIP / DETR label sets and decision rules (scene gate, depth, hazards, culvert, nala, dashcam,
+                      rescue, gauge waterline, change share)
+scripts/fetch-water.js  OSM lakes, culverts, buffer buildings, facilities -> data/water.json
+scripts/fetch-tgrac.js  TGRAC government GIS (waterlogging points, nala segment widths, tanks, zones) -> data/tgrac/
+scripts/fetch-sachet.js NDMA SACHET CAP RSS -> data/sachet.json (hourly, .github/workflows/sachet.yml)
+scripts/e2e.mjs       Playwright browser test of every tab (CI job "e2e")
+test/ideas.test.js, test/field.test.js   drainage, vision rules, government data, server APIs and malformed paths
+```
+
+Rules for these tools: images stay on the device and only a flood signal is used; non-street images are refused; life-safety hazards (live wire, open manhole) escalate to a human at a low bar (0.1), others need 0.5; anything simulated (sensor readings, camera feeds standing in for police CCTV) is labelled on screen. TGRAC publishes its encroachment fields empty, so only widths and points are used. `server.js` `/api/*` endpoints (report, WhatsApp webhook, sensor, inbox) keep inputs in memory only and every feature still works on static hosting.

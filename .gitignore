@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 .claude/
 data/audit.jsonl
 data/live-cache.json

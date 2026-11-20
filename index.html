@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="app/style.css?v=2b4feff">
+  <link rel="stylesheet" href="app/style.css?v=0.5.0">
 </head>
 <body>
   <div id="boot"><div class="box"><div class="logo"></div><b>SurgeForce</b><div class="step" id="bootStep">Loading terrain, stations and forecasts…</div><div class="track"><i></i></div></div></div>
@@ -52,14 +52,17 @@
     <aside class="glass">
       <nav id="tabs">
         <button data-t="timeline" class="on">Timeline</button><button data-t="pairs">Counterparts</button>
-        <button data-t="teams">Teams</button><button data-t="reports">Reports</button><button data-t="buildings">Buildings</button>
+        <button data-t="teams">Teams</button><button data-t="reports">Reports</button>
         <button data-t="alerts">Alerts</button><button data-t="evidence">Evidence</button><button data-t="copilot" class="ai">AI Assistant</button><button data-t="method">Method</button>
+      </nav>
+      <nav id="tabs2" class="tabs2">
+        <span class="navlabel">Field &amp; fix</span><button data-t="water">Water flow</button><button data-t="fixit">Fix-it</button><button data-t="vision" class="ai">Vision</button><button data-t="buildings">Buildings</button><button data-t="live">Live data</button><button data-t="route">Safe route</button>
       </nav>
       <div id="panel" class="panel"></div>
     </aside>
   </main>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-  <script type="module" src="app/app.js?v=2b4feff"></script>
+  <script type="module" src="app/app.js?v=1.1.0"></script>
   <script src="site-nav.js"></script>
 </body>
 </html>

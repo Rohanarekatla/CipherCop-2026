@@ -29,7 +29,7 @@ jobs:
       - name: Stage only the static site
         run: |
           mkdir _site
-          cp -r index.html site-nav.js app lib data netra firesight _site/
+          cp -r index.html report.html site-nav.js app lib data netra firesight _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

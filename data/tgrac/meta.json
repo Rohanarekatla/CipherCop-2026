@@ -1,0 +1,12 @@
+{
+ "source": "https://tgrac.telangana.gov.in/arcgis/rest/services/GHMCNalas_Folder/GHMCNalas_vul/MapServer",
+ "fetchedAt": "2026-11-20T14:39:55.861Z",
+ "note": "Telangana government public GIS service (TGRAC). Encroachment fields are published empty, so only widths are used.",
+ "layers": {
+  "waterlogging": 23,
+  "nalas": 96,
+  "segments": 1162,
+  "tanks": 847,
+  "zones": 6
+ }
+}

@@ -1,10 +1,10 @@
 # SurgeForce: ideas, roadmap and data sources
 
-This is our idea submission and roadmap for CipherCop 2026, Track 02. It lists what is already built, the ideas we will build next, the government data each one needs, and what we would ask the government for. Research done on 19 Nov 2026; sources are linked inline. Anything not yet built is marked as an idea.
+This is our idea submission and roadmap for CipherCop 2026, Track 02. It lists what is already built, the ideas we will build next, the government data each one needs, and what we would ask the government for. Research done on 19 Nov 2026; sources are linked inline. **Update 20 Nov 2026 (v0.5): every idea below now has a working version in the app.** Section 1b says, for each one, where it is and what is real, approximate or simulated until the government data arrives.
 
 **The one-line pitch:** SurgeForce already tells Hyderabad *when* a flood is coming and *where* to stage people. The next step is to show *where the water goes*, *why each spot floods*, and *who is responsible for fixing it*, so the city gets better after every storm instead of flooding in the same places every year.
 
-## 1. Already built (live today)
+## 1. Built before 19 Nov (the core)
 
 Live: https://rohanarekatla.github.io/hyd-short-staff/. Details in [README.md](README.md) and [OVERVIEW.md](OVERVIEW.md).
 
@@ -14,6 +14,42 @@ Live: https://rohanarekatla.github.io/hyd-short-staff/. Details in [README.md](R
 - **Proof:** simulation shows rescues reached within 30 minutes rising from 83% to 96%.
 - **AI assistant:** Claude or a local Llama model answers the commander only by calling the planner's tools.
 - **3D command map:** terrain, flood-prone ground as columns, station exposure, counterparts, underpasses.
+
+## 1b. Built in v0.5 (20 Nov 2026): every idea, working in the app
+
+New tabs under **Field & fix**: Water flow, Fix-it, Vision, Buildings (Malik's AI-NETRA data), Live data, Safe route. **Model check against government data:** 52% of GHMC's 23 official waterlogging points sit where at least 0.25 km² of rain converges, against 30% of the city (1.76× lift); low ground alone gives no lift (17% vs 16%), because most points are underpasses and junctions where drains fail. Code: `lib/water.js` (drainage), `lib/vision.js` (vision rules), `app/ideas.js` (UI), `report.html` (public page), `server.js` (field inputs). Tests: `test/ideas.test.js`.
+
+| Idea | Where | What works now | Real, approximate or simulated |
+|---|---|---|---|
+| A1 Follow the Water | Water flow | Click anywhere: downhill path to the nala and on, uphill catchment, dead-end ground | Real terrain (7,021 cells) with depression filling; 250 m resolution |
+| A2 Bottleneck Finder | Water flow | OSM culverts ranked by area, low ground, facilities and buffer buildings upstream, flagged when within 500 m of a GHMC official waterlogging point; 1,048 official TGRAC nala segments ranked by how far they fall short of the proposed width (838 are under half) | Real OSM and real government (TGRAC) data |
+| A3 Lake Breach Watch | Water flow | 82 lakes ≥ 5 ha: breach path, travel time, facilities on the path, "watch this bund", evacuation text (en/te) | Real OSM lakes; "no outflow" means none mapped in OSM |
+| A4 Drain digital twin | Water flow | Drain overflow times from forecast rain at each drain's nearest forecast point | Approximate (rational method, 12 mm/h capacity) until GHMC's drain GIS |
+| B1 Encroachment Detector | Fix-it | OSM buildings inside lake/nala buffers, ranked by whether they drain into flooding; copy-ready HYDRAA complaint | Real OSM outlines, not the notified FTL line: leads to verify |
+| B2 Photo to depth to complaint | Vision | Photo → depth estimate, hazards, routing, MyCURE draft, confirm the sector | On-device CLIP (zero-shot, approximate) |
+| B3 Escalation clock | Fix-it | Ticket with photo and pin, deadline = hours to rain, escalation, after-photo checked by AI to close | Works; stored in the browser |
+| B4 After-Flood Report | Fix-it | Predicted vs confirmed sectors with likely causes, including GHMC official waterlogging points and official nala segments under half their proposed width; downloadable report | Works on confirmed reports |
+| C1 WhatsApp bot and public map | Live data, report.html | Public report page (text, photo, location); WhatsApp Cloud API webhook and inbox on the local server | Works locally; needs a WhatsApp Business number to go live |
+| C2 CCTV detection | Vision | Any video or this device's camera as an underpass camera; water confirms the sector | On-device; real police feeds need an agreement |
+| C3 Patrol dashcam | Vision | Dashcam video sampled every 2 s, findings pinned | On-device; GPS per frame from a patrol app later |
+| C4 Water-level sensors | Live data | 12 hotspot sensors; 30 cm confirms the sector; `/api/sensor` for real hardware | Readings simulated from forecast rain until sensors exist |
+| D1 SACHET alerts | Live data | Official CAP alerts, refreshed by a GitHub Action every hour | Real |
+| D2 TSDPS weather stations | Live data | CSV import; 20 mm/h confirms the sector | Works on any file; live feed needs an agreement |
+| D3 Satellite flood maps | Vision → Satellite | Sentinel-2 layer on the map; Sentinel-1 for the event dates in Copernicus Browser | Real imagery; radar change detection needs server processing |
+| D4 IMD | Live data | IMD categories used as triggers; IMD links | API needs IP whitelisting |
+| D5 TGiCCC | Live data | Approved actions → message-board and PA text; JSON feed | Works; needs a TGiCCC endpoint |
+| E1 Flood-aware routing | Safe route | OSRM alternatives scored by flooded cells and closed underpasses | Real road router (live) |
+| E2 Vulnerable facilities | Live data, plan | 2,058 OSM facilities; those on low ground raise their sector's exposure in the plan | Real OSM |
+| E3 Learning plan | Fix-it | Proposes new hit share and flood stage from confirmed sectors; apply and log | Works; one storm moves values 30% |
+| F1 CCTV depth | Vision | Depth bands from the frame; 30 cm at an underpass closes it | On-device CLIP |
+| F2 Culvert blockage | Vision | Clear / blocked; blocked opens a ticket | On-device CLIP |
+| F3 Dashcam audit | Vision | As C3 | On-device CLIP |
+| F4 Drone nala survey | Vision | 9-tile check for garbage, silt, weeds, walls, buildings | On-device CLIP |
+| F5 Drone search and rescue | Vision | People, vehicles, boats detected; rescue task confirms the sector | On-device DETR |
+| F6 Change detection | Vision | Before/after share changed with heat map | Works on co-registered images |
+| F7 Camera-read gauge | Vision | Click the scale ends; waterline read from where the stripes vanish | Works (classic vision) |
+| F8 Citizen photo intelligence | Vision | Multi-label hazards; live wire and open manhole go to a human at a low bar | On-device CLIP |
+| F9 Satellite | Vision → Satellite | As D3 | As D3 |
 
 ## 2. The problem we are solving next
 
