@@ -81,7 +81,7 @@ s = pres.addSlide(); s.background = { color: 'F2F7FB' }; badge(s, 1, 'PREPARE');
 title(s, 'Before the rain: a plan the commander approves');
 r = pic(s, 'img/home-panel.png', 0.7, 1.45, 4.1, 5.3, 'Plan & approve: timeline of decisions with Approve and Reject');
 pic(s, 'img/alerts-panel.png', 5.0, 1.45, 4.1, 5.3, 'Public alerts: SACHET CAP alert in four languages');
-card(s, 9.4, 1.45, 3.3, r.h, WHITE);
+r.h = Math.max(r.h, 4.4); card(s, 9.4, 1.45, 3.3, r.h, WHITE);
 txt(s, bullets(['Plan & approve: every staging move, closure and alert waits for Approve or Reject, and is logged', 'Backup stations: 20 dry stations pre-paired with exposed ones (Japan model)', 'Teams: GHMC monsoon teams and HYDRAA DRF units staged by min-cost flow', '51 underpasses closed before water arrives (Korea model)', 'Public alerts: CAP 1.2 for NDMA SACHET in English, Telugu, Hindi, Urdu']), { x: 9.6, y: 1.65, w: 2.95, h: r.h - 0.3, fontSize: 13 });
 callout(s, 'Nothing moves until a human approves, and every decision is logged.', r.y + r.h + 0.35);
 s.addNotes('Step 1. The forecast says when; the planner proposes; nothing moves until the commander approves.');
@@ -100,7 +100,7 @@ title(s, 'AI-NETRA: which buildings to reach first');
 pic(s, 'img/building-card.png', 0.7, 1.5, 7.6, 4.28,  'Real buildings in 3D near the Musi with one building selected and its evidence card', 'left');
 card(s, 8.6, 1.5, 4.1, 4.3, WHITE);
 txt(s, bullets(['11,659 real buildings at their real height', 'Click any building: height, river and waterlogging distance, 2020 flood map, Sentinel-1 radar, sources', 'Musi forecast → 529 evacuate first, 2,083 shelter in place', 'No rescue priority without verified evidence; a human decides']), { x: 8.85, y: 1.75, w: 3.7, h: 3.9, fontSize: 14 });
-s.addNotes('Malik built the building intelligence; the merged product links it to the flood forecast and to citizen reports.');
+s.addNotes('AI-NETRA brings the building intelligence; the merged product links it to the flood forecast and to citizen reports.');
 
 
 // 7f AI-NETRA evidence before priority
@@ -109,10 +109,10 @@ title(s, 'No rescue priority without verified evidence');
 r = pic(s, 'img/building-card-panel.png', 0.7, 1.45, 4.1, 5.3, 'Building card before verification: priority not assessed');
 s.addShape(pres.ShapeType.rightArrow, { x: 4.95, y: 3.7, w: 0.6, h: 0.5, fill: { color: AMBER }, line: { color: AMBER } });
 pic(s, 'img/building-verified-panel.png', 5.7, 1.45, 4.1, 5.3, 'After officer verification: evidence complete, ready for human review');
-card(s, 10.1, 1.45, 2.6, r.h, 'F2F7FB');
-txt(s, bullets(['Malik’s rule: 6 incident fields (people, depth, flow…) must be verified', 'Until then: priority "not assessed"', 'Officer verifies on the ground → ready for human review', 'Automated dispatch: never', 'Musi stage slider: shelter in place vs evacuate first']), { x: 10.25, y: 1.65, w: 2.35, h: r.h - 0.3, fontSize: 12 });
+r.h = Math.max(r.h, 4.4); card(s, 10.1, 1.45, 2.6, r.h, 'F2F7FB');
+txt(s, bullets(['The rule: 6 incident fields (people, depth, flow…) must be verified', 'Until then: priority "not assessed"', 'Officer verifies on the ground → ready for human review', 'Automated dispatch: never', 'Musi stage slider: shelter in place vs evacuate first']), { x: 10.25, y: 1.65, w: 2.35, h: r.h - 0.3, fontSize: 12 });
 callout(s, 'Missing evidence means no priority, never a guess. A human always decides.', r.y + r.h + 0.35);
-s.addNotes('Same rules as Malik’s assess_rescue_readiness.py, ported to the browser and covered by tests.');
+s.addNotes('Same rules as AI-NETRA’s assess_rescue_readiness.py, ported to the browser and covered by tests.');
 
 // 7f2 original AI-NETRA prototype (frames from its recorded demo, docs/demo/demo_NETRA.mp4 in the original repo)
 s = pres.addSlide(); s.background = { color: 'F2F7FB' }; badge(s, 2, 'RESPOND');
@@ -143,7 +143,7 @@ s = pres.addSlide(); s.background = { color: WHITE }; badge(s, 3, 'PREVENT');
 title(s, 'Leads for the fix, and cameras as flood sensors');
 r = pic(s, 'img/fixit-panel.png', 0.7, 1.45, 4.1, 5.3, 'Encroachment detector: 843 leads with complaint drafts');
 pic(s, 'img/vision-panel.png', 5.0, 1.45, 4.1, 5.3, 'Camera AI: eight on-device computer-vision tools');
-card(s, 9.4, 1.45, 3.3, r.h, 'F2F7FB');
+r.h = Math.max(r.h, 4.4); card(s, 9.4, 1.45, 3.3, r.h, 'F2F7FB');
 txt(s, bullets(['843 buildings inside lake or nala no-build buffers, ranked by whether they drain into flooded areas', 'One-click GHMC complaint drafts and blocked-drain tickets', 'After-flood accountability report cites the official points', 'Camera AI (CLIP + DETR in the browser): photo depth, CCTV, dashcam, culvert, drone, gauge, satellite']), { x: 9.6, y: 1.65, w: 2.95, h: r.h - 0.3, fontSize: 13 });
 foot(s, 'Encroachment results are leads for a human to check, not findings. OSM lake outlines are not the notified FTL line.');
 callout(s, 'From flood to fix: every lead becomes a ready-to-send complaint, checked by a human.', r.y + r.h + 0.35);
@@ -154,7 +154,7 @@ s = pres.addSlide(); s.background = { color: 'F2F7FB' }; badge(s, 4, 'PROOF & AI
 title(s, 'Ask the AI, then check the evidence');
 r = pic(s, 'img/copilot-panel.png', 0.7, 1.45, 4.1, 5.3, 'AI assistant: answers only from the planner tools, local Llama or Claude');
 pic(s, 'img/evidence-panel.png', 5.0, 1.45, 4.1, 5.3, 'Evidence: forecast backtest over two monsoons');
-card(s, 9.4, 1.45, 3.3, r.h, WHITE);
+r.h = Math.max(r.h, 4.4); card(s, 9.4, 1.45, 3.3, r.h, WHITE);
 txt(s, bullets(['AI assistant calls the planner’s tested tools; every number comes from a tool call', 'Runs on a local Llama (data stays on the machine) or Claude', 'It drafts and explains; it cannot approve or send', 'Evidence tab: backtest, Monte Carlo simulation, AI vs keyword triage', 'How it works: every source and assumption']), { x: 9.6, y: 1.65, w: 2.95, h: r.h - 0.3, fontSize: 13 });
 callout(s, 'Forecasts are skilful for WHEN (ROC 0.81) and not for WHERE, so WHERE comes from terrain and citizens.', r.y + r.h + 0.35);
 s.addNotes('Step 4. Trust comes from tools and evidence, not from the model’s word.');
@@ -212,7 +212,7 @@ s.addTable([[hd('Stage'), hd('AI used'), hd('Evidence')],
   [cell('Moves', { bold: true }), cell('Exact optimiser by design, so every move is auditable'), cell('Supply, floors and safety rules covered by automated tests')],
   [cell('Ask', { bold: true }), cell('AI agent (Claude, or local Llama) with 10 planner tools'), cell('Every number comes from a tool call; it cannot approve or send')]],
   { x: 0.7, y: 1.6, w: 11.9, colW: [1.5, 6.1, 4.3], rowH: [0.5, 0.95, 1.1, 0.8, 0.95], border: { type: 'solid', color: 'D5E3EE', pt: 0.75 }, fill: { color: 'F7FAFC' } });
-txt(s, 'AI reads, forecasts and explains. The optimiser stays exact so a commander can audit every move.', { x: 0.7, y: 5.9, w: 11.9, h: 0.6, fontFace: H, fontSize: 20, bold: true, color: TEAL });
+txt(s, 'AI reads, forecasts and explains. The optimiser stays exact so a commander can audit every move.', { x: 0.7, y: 6.55, w: 11.9, h: 0.6, fontFace: H, fontSize: 20, bold: true, color: TEAL });
 s.addNotes('AI is used where it adds value and kept out of the optimiser on purpose: a commander must be able to audit every move.');
 
 // 6 proof
@@ -226,8 +226,8 @@ s.addNotes('Be honest: incident rates in the simulation are assumptions. The for
 // 7 merge
 s = pres.addSlide(); s.background = { color: WHITE };
 title(s, 'Three builds, one command centre');
-const mods = [['Rohan', 'SurgeForce', 'Forecast backtest, terrain, optimiser, simulation, AI triage, agent, water flow, camera AI and government drainage data.'], ['Malik', 'AI-NETRA', 'Building rescue: 11,659 real buildings in 3D, click-to-identify, height, river, waterlogging, 2020 flood map, Sentinel-1 radar and his rescue-readiness rule.'], ['Aditya', 'FireSight', 'Fire risk and response, one slide away; its model weights score the same real buildings, and its Twilio alerts send approved warnings.']];
-mods.forEach(([n, h, b], i) => { const x = 0.7 + i * 4.1; card(s, x, 1.7, 3.8, 3.6); txt(s, n, { x: x + 0.3, y: 1.95, w: 3.2, h: 0.4, fontSize: 16, bold: true, color: TEAL }); txt(s, h, { x: x + 0.3, y: 2.4, w: 3.2, h: 0.6, fontFace: H, fontSize: 24, bold: true }); txt(s, b, { x: x + 0.3, y: 3.2, w: 3.2, h: 2.0, fontSize: 15, color: MUTED }); });
+const mods = [['Rohan', 'SurgeForce', 'Forecast backtest, terrain, optimiser, simulation, AI triage, agent, water flow, camera AI and government drainage data.'], ['Malik', 'AI-NETRA', 'Building rescue: 11,659 real buildings in 3D, click-to-identify, height, river, waterlogging, 2020 flood map, Sentinel-1 radar and its rescue-readiness rule.'], ['Aditya', 'FireSight', 'Fire risk and response, one slide away; its model weights score the same real buildings, and its Twilio alerts send approved warnings.']];
+mods.forEach(([n, h, b], i) => { const x = 0.7 + i * 4.1; card(s, x, 1.7, 3.8, 3.6); txt(s, h, { x: x + 0.3, y: 2.0, w: 3.2, h: 0.6, fontFace: H, fontSize: 26, bold: true }); txt(s, b, { x: x + 0.3, y: 2.8, w: 3.2, h: 2.4, fontSize: 16, color: MUTED }); });
 txt(s, 'One flood product: SurgeForce decides when and where to stage teams, AI-NETRA tells them which buildings, and FireSight covers fire with a slide of the switch.', { x: 0.7, y: 5.6, w: 11.9, h: 1.2, fontSize: 18 });
 s.addNotes('Each teammate built a module separately. The merged app shows them together in the Buildings tab and gives the agent two extra tools.');
 
@@ -235,16 +235,16 @@ s.addNotes('Each teammate built a module separately. The merged app shows them t
 s = pres.addSlide(); s.background = { color: 'F2F7FB' };
 title(s, 'Real data, honestly labelled');
 card(s, 0.7, 1.7, 5.8, 4.8, WHITE); txt(s, 'Real', { x: 1.0, y: 1.95, w: 5, h: 0.5, fontFace: H, fontSize: 24, bold: true, color: TEAL });
-txt(s, bullets(['Open-Meteo ensembles, ECMWF AIFS, ERA5', 'SRTM terrain, OSM nalas and the Musi', 'OSM police and fire stations, 51 underpasses', 'OSRM road times, GloFAS river discharge', '11,659 OSM buildings, Google heights', 'Telangana TGRAC govt drainage GIS: 23 waterlogging points, 1,048 nala widths', 'NDMA SACHET official alerts']), { x: 1.0, y: 2.6, w: 5.2, h: 3.7, fontSize: 15 });
+txt(s, bullets(['Open-Meteo ensembles, ECMWF AIFS, ERA5', 'SRTM terrain, OSM nalas and the Musi', 'OSM police and fire stations, 51 underpasses', 'OSRM road times, GloFAS river discharge', '11,659 OSM buildings, Google heights', 'Telangana TGRAC govt drainage GIS: 23 waterlogging points, 1,048 nala widths', 'NDMA SACHET official alerts']), { x: 1.0, y: 2.6, w: 5.2, h: 3.7, fontSize: 17 });
 card(s, 6.8, 1.7, 5.8, 4.8, WHITE); txt(s, 'Assumed, and labelled in the app', { x: 7.1, y: 1.95, w: 5.2, h: 0.5, fontFace: H, fontSize: 24, bold: true, color: 'B7741A' });
-txt(s, bullets(['Officers per station, team locations in a zone', 'Incident rates in the simulation', 'Simulated citizen reports', 'FireSight demo buildings: only its weights are reused', 'Exposure is a ranking, not flood probability']), { x: 7.1, y: 2.6, w: 5.2, h: 3.7, fontSize: 15 });
+txt(s, bullets(['Officers per station, team locations in a zone', 'Incident rates in the simulation', 'Simulated citizen reports', 'FireSight demo buildings: only its weights are reused', 'Exposure is a ranking, not flood probability']), { x: 7.1, y: 2.6, w: 5.2, h: 3.7, fontSize: 17 });
 s.addNotes('Judges will ask what is real. This slide answers it.');
 
 // 9 safety
 s = pres.addSlide(); s.background = { color: WHITE };
 title(s, 'Built so a commander can trust it');
 const safe = [['AI may escalate, never downgrade', 'If rules flag a report as life-threatening, the AI cannot lower it. Covered by a test.'], ['The agent cannot act', 'It drafts and recommends. Only the commander approves, and every approval is logged.'], ['Police data stays local', 'Triage runs in the browser. The agent can run on a local Llama model.'], ['Tested and automated', '37 automated tests, a real-browser test of every screen, CI on every push, CodeQL scanning.']];
-safe.forEach(([h, b], i) => { const x = 0.7 + (i % 2) * 6.1, y = 1.7 + Math.floor(i / 2) * 2.4; card(s, x, y, 5.8, 2.1); txt(s, h, { x: x + 0.3, y: y + 0.25, w: 5.2, h: 0.5, fontSize: 20, bold: true, color: TEAL }); txt(s, b, { x: x + 0.3, y: y + 0.85, w: 5.2, h: 1.1, fontSize: 16, color: MUTED }); });
+safe.forEach(([h, b], i) => { const x = 0.7 + (i % 2) * 6.1, y = 1.7 + Math.floor(i / 2) * 2.55; card(s, x, y, 5.8, 2.3); txt(s, h, { x: x + 0.3, y: y + 0.25, w: 5.2, h: 0.5, fontSize: 20, bold: true, color: TEAL }); txt(s, b, { x: x + 0.3, y: y + 0.85, w: 5.2, h: 1.3, fontSize: 18, color: MUTED }); });
 s.addNotes('Safety rules are non-negotiable and documented in AGENTS.md.');
 
 // 10 close
