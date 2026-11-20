@@ -32,7 +32,7 @@ jobs:
           cp -r index.html report.html site-nav.js app lib data netra firesight _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
