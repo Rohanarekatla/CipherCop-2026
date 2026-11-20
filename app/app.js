@@ -11,7 +11,8 @@ import { makeClassifier, transformersEmbedder } from '../lib/ai/intake-ai.js';
 import { facts, templateSitrep } from '../lib/copilot.js';
 import { loadBuildings, scored, summary as bldgSummary, topExposed } from '../lib/buildings.js';
 import { compoundHazard } from '../lib/fire.js';
-import { installIdeas } from './ideas.js?v=1.1.0';
+import { installIdeas } from './ideas.js?v=1.2.0';
+import { installNetra } from './netra.js?v=1.2.0';
 import { ASSUMPTIONS } from '../lib/risk.js';
 
 const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
@@ -531,6 +532,11 @@ load();
 installIdeas({ state, map, ready, panels, drawPanel, load, esc, fc, feat, ll, box, area, fmt, pct, getJSON, TRANSFORMERS })
   .then((W) => { state.picking = () => !!W.pick; return load(); })
   .catch((e) => console.error('ideas', e));
+// AI-NETRA (Malik) inside the Buildings tab: 3D footprints and full building evidence
+installNetra({ state, map, ready, panels, drawPanel, load, esc, fc, feat, getJSON }).catch((e) => console.error('netra', e));
+// deep links: #buildings, #water, … open that tab (#fire is handled by the Flood / Fire switch)
+const hashTab = location.hash.slice(1);
+if (panels[hashTab]) { state.tab = hashTab; drawPanel(); }
 
 // on-device AI for report triage loads in the background; rules cover reports until it is ready
 (async () => {

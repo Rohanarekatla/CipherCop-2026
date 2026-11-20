@@ -44,9 +44,15 @@ Rohan's later SurgeForce work (v0.5, after the copy in `Rohan/`) is merged into 
 - the Method tab crashed because it read `assumptions` from `base.json`, which has none (this bug was also in `Rohan/`);
 - a browser end-to-end test (`scripts/e2e.mjs`) now opens every tab in CI.
 
+## One flood product (SurgeForce + AI-NETRA) and the Flood / Fire switch
+
+AI-NETRA is no longer a separate lighter page. Its features live in SurgeForce's Buildings tab (`app/netra.js`, `lib/netra.js`, data built from `Malik/data` by `scripts/build-netra.js`): 3D footprints at real heights, click-to-identify with nearby candidates, every evidence section of Malik's map (height, area, Musi and waterlogging proximity, 2020 flood map, Sentinel-1 radar for his 40 targeted buildings, source investigation, evidence quality and provenance), his demo incidents (labelled synthetic), and his rescue-readiness rule ported from `Malik/scripts/assess_rescue_readiness.py` and `classify_evidence_quality.py`. SurgeForce field inputs (reports, photos, CCTV, gauges) become his current-incident evidence, and an officer's ground verification completes it for human review. `/netra/` redirects there. FireSight is reached by a slide switch instead of a link.
+
+Still only in `Malik/`: the FastAPI service and Next.js app themselves (Python), and his computer-vision notebook.
+
 ## Status
 
-- Local run of all three pages checked in a browser. 32 automated tests and the end-to-end browser test pass.
+- Local run of all three pages checked in a browser. 37 automated tests and the end-to-end browser test pass.
 - The GitHub Actions workflows (CI, Pages, CodeQL) are in the repo but have not run yet. They run on pull requests and pushes to `main`.
 - All of this work is on the branch `submission/ai-vengers-merge`. `main` is still the initial commit.
 - Not tested: the Claude and Ollama agent paths (they need an API key or a local model) and live forecast mode.

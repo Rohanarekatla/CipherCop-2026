@@ -13,15 +13,12 @@ An AI command centre that decides, **before** a storm hits Hyderabad, which poli
 3. An exact min-cost-flow optimiser stages teams and pre-assigns counterpart stations (Japan's *taiko shien*). A Monte Carlo simulation shows rescues reached within 30 minutes rise from 83% to 96%.
 4. An AI agent (Claude Opus 5.5, or a local Llama so police data never leaves the building) answers the commander only by calling the planner's tools, so every number is grounded. It cannot approve or send anything.
 
-## One website, three tools
+## One flood command centre, with fire one slide away
 
-Run `npm start` and open http://localhost:8520. A switcher at the bottom of every page moves between the three tools:
+Run `npm start` and open http://localhost:8520.
 
-| URL | Tool | From |
-|---|---|---|
-| `/` | **SurgeForce** command centre (forecast, plan, reports, agent, Buildings tab) | Rohan |
-| `/firesight/` | **FireSight** fire-risk map, incident response and alert flow (demo data) | Aditya |
-| `/netra/` | **AI-NETRA** building intelligence map: click any of 11,659 real buildings | Malik |
+- **Flood (SurgeForce + AI-NETRA, Rohan + Malik):** one product. SurgeForce decides when and where to stage teams; AI-NETRA, in the **Buildings** tab, says which buildings. Malik's 11,659 real buildings stand in 3D at their real height. Click any building for every piece of his evidence: exact identification with nearby candidates, Google height intelligence, footprint, Musi and government-waterlogging proximity, the official October 2020 flood map, Sentinel-1 radar change, source investigation, evidence quality and provenance, and his rescue-readiness rule (no rescue priority without verified current evidence, never automated dispatch). The Musi forecast sets the scenario plan: shelter in place, evacuate first or verify.
+- **Fire (FireSight, Aditya):** slide the **Flood / Fire** switch (bottom right; click, drag or arrow keys) and FireSight slides in over the flood centre, which keeps running underneath. `#fire` in the URL opens it directly; `/netra/` now opens the Buildings tab.
 
 ## What the merged project adds
 
@@ -52,7 +49,7 @@ Needs Node 21 or later. Nothing to install.
 
 ```bash
 npm start       # http://localhost:8520 (static server; everything runs in the browser)
-npm test        # 32 tests: planner, simulation, AI triage, agent, buildings, fire, drainage, vision rules, government data, server
+npm test        # 37 tests: planner, simulation, AI triage, agent, buildings, fire, drainage, vision rules, government data, AI-NETRA evidence rules, server
 node scripts/e2e.mjs   # browser test of every tab (needs: npm i --no-save playwright@1.48.2 && npx playwright install chromium)
 ```
 

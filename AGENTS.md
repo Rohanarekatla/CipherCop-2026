@@ -156,3 +156,19 @@ test/ideas.test.js, test/field.test.js   drainage, vision rules, government data
 ```
 
 Rules for these tools: images stay on the device and only a flood signal is used; non-street images are refused; life-safety hazards (live wire, open manhole) escalate to a human at a low bar (0.1), others need 0.5; anything simulated (sensor readings, camera feeds standing in for police CCTV) is labelled on screen. TGRAC publishes its encroachment fields empty, so only widths and points are used. `server.js` `/api/*` endpoints (report, WhatsApp webhook, sensor, inbox) keep inputs in memory only and every feature still works on static hosting.
+
+## 14. One flood product and the Flood / Fire switch
+
+```
+app/netra.js          Buildings tab = AI-NETRA inside SurgeForce: 3D footprints, identify on click, Malik's evidence cards,
+                      demo incidents, rescue readiness, Musi scenario plan; joins exposure and fire scores by OSM way id
+lib/netra.js          scenario triage (rescuePlan, assess, depthAt), identify, evidenceRecords, readiness (Malik's rules)
+scripts/build-netra.js  Malik/data -> data/netra/buildings.json (footprints + evidence), evidence.json (radar, incidents),
+                      history2020.json
+site-nav.js           Flood / Fire slide switch on every page; slides FireSight in as a lazy iframe over the flood centre
+netra/index.html      redirect to ../#buildings
+```
+
+Malik's rule is binding: rescue priority is "not assessed" unless all six current-incident fields are present and the
+observation is verified by a person; automated dispatch is never authorised. The scenario plan (shelter / evacuate /
+verify) is for staging boats and must not be called a rescue priority.

@@ -38,13 +38,34 @@ try {
   await page.click('#send');
   await page.waitForFunction(() => /rescue/i.test(document.querySelector('#panel').innerText) && document.querySelector('#panel').innerText.includes('Uppal'), null, { timeout: 30000 });
   check(true, 'a citizen report is triaged and placed in Uppal');
-  await tab('buildings', 'Musi');
+  await tab('buildings', 'AI-NETRA building rescue intelligence');
+  await page.waitForFunction(() => document.querySelector('#nDemo'), null, { timeout: 60000 });
+  await page.selectOption('#nDemo', { index: 1 });
+  await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('Unified rescue assessment'), null, { timeout: 30000 });
+  const card = await page.innerText('#panel');
+  check(/Building identification[\s\S]*Google building height intelligence[\s\S]*Sentinel-1 historical radar evidence[\s\S]*Evidence quality and provenance/.test(card), 'AI-NETRA building card shows Malik\'s evidence sections');
+  check(/Rescue priority\s+not assessed/.test(card), 'unverified incident: rescue priority not assessed');
+  await page.click('[data-n="verify"]');
+  await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('ready for human review'), null, { timeout: 10000 });
+  check(true, 'officer verification completes the evidence for human review');
   await tab('water', 'Official GHMC drainage data');
   await tab('fixit', 'After-Flood Accountability Report');
   await tab('vision', 'Computer vision, on this device');
   await tab('live', 'Official alerts (NDMA SACHET)');
   await tab('route', 'Flood-aware routing');
-  for (const [path, sel] of [['/firesight/', 'body'], ['/netra/', 'body'], ['/report.html', 'h1']]) {
+  // Flood / Fire slide switch: FireSight slides in over the flood centre and back out
+  await page.click('#hz .track');
+  await page.waitForFunction(() => document.querySelector('#fireStage')?.classList.contains('open'), null, { timeout: 10000 });
+  const frame = page.frameLocator('#fireStage iframe');
+  await frame.locator('body').waitFor({ timeout: 30000 });
+  check((await page.evaluate(() => location.hash)) === '#fire', 'slide to Fire opens FireSight over the flood centre');
+  await page.click('#hz .track');
+  await page.waitForFunction(() => !document.querySelector('#fireStage').classList.contains('open'), null, { timeout: 10000 });
+  check(true, 'slide back to Flood');
+  await page.goto(`${base}/netra/`);
+  await page.waitForFunction(() => location.hash === '#buildings', null, { timeout: 15000 });
+  check(true, '/netra/ redirects to the Buildings tab');
+  for (const [path, sel] of [['/firesight/', 'body'], ['/report.html', 'h1']]) {
     const res = await page.goto(`${base}${path}`);
     await page.waitForTimeout(2500);
     check(res.status() === 200 && (await page.innerText(sel)).length > 0, `${path} loads`);
