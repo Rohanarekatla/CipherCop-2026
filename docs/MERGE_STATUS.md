@@ -54,7 +54,7 @@ Still only in `Malik/`: the FastAPI service and Next.js app themselves (Python),
 
 - Local run of all three pages checked in a browser. 37 automated tests and the end-to-end browser test pass.
 - The GitHub Actions workflows (CI, Pages, CodeQL) are in the repo but have not run yet. They run on pull requests and pushes to `main`.
-- All of this work is on the branch `submission/ai-vengers-merge`. `main` is still the initial commit.
+- All of this work is merged into `main` (pull request #1, every CI job passing).
 - Not tested: the Claude and Ollama agent paths (they need an API key or a local model) and live forecast mode.
 
 See also: `README.md`, `docs/ARCHITECTURE.md`, `docs/DATASETS.md`, `docs/SUBMISSION.md`.
