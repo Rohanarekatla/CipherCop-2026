@@ -68,16 +68,33 @@ s.addNotes('Be honest: incident rates in the simulation are assumptions. The for
 // 7 merge
 s = pres.addSlide(); s.background = { color: WHITE };
 title(s, 'Three builds, one command centre');
-const mods = [['Rohan', 'SurgeForce core', 'Forecast backtest, terrain, optimiser, simulation, AI triage and the agent.'], ['Malik', 'AI-NETRA-GEO', '11,659 real OSM buildings with Google heights, Musi distance and government waterlogging points, ranked by exposure.'], ['Aditya', 'FireSight', 'Fire-risk weights applied to the same real buildings, nearest real fire station, and alert delivery.']];
+const mods = [['Rohan', 'SurgeForce', 'Forecast backtest, terrain, optimiser, simulation, AI triage, agent, water flow, camera AI and government drainage data.'], ['Malik', 'AI-NETRA', 'Building rescue: 11,659 real buildings in 3D, click-to-identify, height, river, waterlogging, 2020 flood map, Sentinel-1 radar and his rescue-readiness rule.'], ['Aditya', 'FireSight', 'Fire risk and response, one slide away; its model weights score the same real buildings, and its Twilio alerts send approved warnings.']];
 mods.forEach(([n, h, b], i) => { const x = 0.7 + i * 4.1; card(s, x, 1.7, 3.8, 3.6); txt(s, n, { x: x + 0.3, y: 1.95, w: 3.2, h: 0.4, fontSize: 16, bold: true, color: TEAL }); txt(s, h, { x: x + 0.3, y: 2.4, w: 3.2, h: 0.6, fontFace: H, fontSize: 24, bold: true }); txt(s, b, { x: x + 0.3, y: 3.2, w: 3.2, h: 2.0, fontSize: 15, color: MUTED }); });
-txt(s, 'Together: when an area is confirmed flooded, commanders see which real buildings are most exposed, which tall ones could shelter people, and where a flood and a fire could coincide far from a fire station.', { x: 0.7, y: 5.6, w: 11.9, h: 1.2, fontSize: 18 });
+txt(s, 'One flood product: SurgeForce decides when and where to stage teams, AI-NETRA tells them which buildings, and FireSight covers fire with a slide of the switch.', { x: 0.7, y: 5.6, w: 11.9, h: 1.2, fontSize: 18 });
 s.addNotes('Each teammate built a module separately. The merged app shows them together in the Buildings tab and gives the agent two extra tools.');
+
+// 7b product: four steps
+s = pres.addSlide(); s.background = { color: WHITE };
+title(s, 'One command centre in four steps');
+s.addImage({ path: 'img/home.png', x: 0.7, y: 1.5, w: 8.4, h: 4.73, altText: 'SurgeForce command centre: 3D map of Hyderabad, KPIs and the four-step panel' });
+[['1  Prepare', 'Approve staged teams, backup stations, underpass closures and public alerts'], ['2  Respond', 'Citizen reports, building rescue, safe routes, live feeds'], ['3  Prevent', 'Where water goes, blocked drains, encroachments, camera AI'], ['4  Proof & AI', 'AI assistant, backtest, simulation, method']]
+  .forEach(([h, b], i) => { const y = 1.5 + i * 1.2; card(s, 9.4, y, 3.3, 1.05); txt(s, h, { x: 9.6, y: y + 0.12, w: 3, h: 0.35, fontSize: 15, bold: true, color: TEAL }); txt(s, b, { x: 9.6, y: y + 0.47, w: 3, h: 0.55, fontSize: 11, color: MUTED }); });
+txt(s, 'Live demo: rohanarekatla.github.io/CipherCop-2026  ·  runs on any laptop with npm start', { x: 0.7, y: 6.45, w: 11.9, h: 0.4, fontSize: 13, color: MUTED });
+s.addNotes('Walk the four steps left to right. Every move needs a commander approval.');
+
+// 7c AI-NETRA building rescue
+s = pres.addSlide(); s.background = { color: 'F2F7FB' };
+title(s, 'AI-NETRA: which buildings to reach first');
+s.addImage({ path: 'img/building-card.png', x: 0.7, y: 1.5, w: 7.6, h: 4.28, altText: 'Real buildings in 3D near the Musi with one building selected and its evidence card' });
+card(s, 8.6, 1.5, 4.1, 4.3, WHITE);
+txt(s, bullets(['11,659 real buildings at their real height', 'Click any building: height, river and waterlogging distance, 2020 flood map, Sentinel-1 radar, sources', 'Musi forecast → 529 evacuate first, 2,083 shelter in place', 'No rescue priority without verified evidence; a human decides']), { x: 8.85, y: 1.75, w: 3.7, h: 3.9, fontSize: 14 });
+s.addNotes('Malik built the building intelligence; the merged product links it to the flood forecast and to citizen reports.');
 
 // 8 real data
 s = pres.addSlide(); s.background = { color: 'F2F7FB' };
 title(s, 'Real data, honestly labelled');
 card(s, 0.7, 1.7, 5.8, 4.8, WHITE); txt(s, 'Real', { x: 1.0, y: 1.95, w: 5, h: 0.5, fontFace: H, fontSize: 24, bold: true, color: TEAL });
-txt(s, bullets(['Open-Meteo ensembles, ECMWF AIFS, ERA5', 'SRTM terrain, OSM nalas and the Musi', 'OSM police and fire stations, 51 underpasses', 'OSRM road times, GloFAS river discharge', '11,659 OSM buildings, Google heights', 'Telangana TGRAC waterlogging points']), { x: 1.0, y: 2.6, w: 5.2, h: 3.7, fontSize: 15 });
+txt(s, bullets(['Open-Meteo ensembles, ECMWF AIFS, ERA5', 'SRTM terrain, OSM nalas and the Musi', 'OSM police and fire stations, 51 underpasses', 'OSRM road times, GloFAS river discharge', '11,659 OSM buildings, Google heights', 'Telangana TGRAC govt drainage GIS: 23 waterlogging points, 1,048 nala widths', 'NDMA SACHET official alerts']), { x: 1.0, y: 2.6, w: 5.2, h: 3.7, fontSize: 15 });
 card(s, 6.8, 1.7, 5.8, 4.8, WHITE); txt(s, 'Assumed, and labelled in the app', { x: 7.1, y: 1.95, w: 5.2, h: 0.5, fontFace: H, fontSize: 24, bold: true, color: 'B7741A' });
 txt(s, bullets(['Officers per station, team locations in a zone', 'Incident rates in the simulation', 'Simulated citizen reports', 'FireSight demo buildings: only its weights are reused', 'Exposure is a ranking, not flood probability']), { x: 7.1, y: 2.6, w: 5.2, h: 3.7, fontSize: 15 });
 s.addNotes('Judges will ask what is real. This slide answers it.');
@@ -92,7 +109,7 @@ s.addNotes('Safety rules are non-negotiable and documented in AGENTS.md.');
 // 10 close
 s = pres.addSlide(); s.background = { color: NAVY };
 txt(s, 'What we need to go live', { x: 0.8, y: 0.8, w: 11.5, h: 0.9, fontFace: H, fontSize: 40, bold: true, color: WHITE });
-txt(s, bullets(['GHMC and police duty rosters and 1070 complaint logs to replace our assumed numbers', 'Official flooding points and NDMA SACHET alerts on the same timeline', 'Next: follow-the-water tracing, encroachment detector, photo-to-depth reports']), { x: 0.8, y: 2.1, w: 11.5, h: 2.8, fontSize: 22, color: ICE });
+txt(s, bullets(['GHMC and police duty rosters and 1070 complaint logs to replace our assumed numbers', 'GHMC storm-drain GIS and HMDA lake boundaries for the drainage model', 'A water / no-water signal from police CCTV at hotspots, and a WhatsApp business number']), { x: 0.8, y: 2.1, w: 11.5, h: 2.8, fontSize: 22, color: ICE });
 txt(s, 'Forecasts say when, terrain and citizens say where, a human decides.', { x: 0.8, y: 5.2, w: 11.5, h: 0.9, fontFace: H, fontSize: 28, bold: true, color: AMBER });
 txt(s, 'github.com/Rohanarekatla/CipherCop-2026', { x: 0.8, y: 6.5, w: 11.5, h: 0.4, fontSize: 16, color: 'A9C7E0' });
 s.addNotes('Close with the one-line summary and the ask.');
