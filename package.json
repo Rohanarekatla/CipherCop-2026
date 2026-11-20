@@ -21,7 +21,7 @@
     "build-netra": "node scripts/build-netra.js"
   },
   "optionalDependencies": {
-    "@anthropic-ai/sdk": "1.3.0"
+    "@anthropic-ai/sdk": "1.9.0"
   },
   "devDependencies": {
     "@huggingface/transformers": "4.3.2"
