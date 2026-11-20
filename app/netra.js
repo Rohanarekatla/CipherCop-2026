@@ -10,7 +10,7 @@ import { musiLevels } from '../lib/risk.js';
 import { scored } from '../lib/buildings.js';
 import { fireRisk } from '../lib/fire.js';
 
-const COLOR = { evacuate: '#ff4d5e', verify: '#f2b544', shelter: '#3ccf91', dry: '#33465c' };
+const COLOR = { evacuate: '#e5484d', verify: '#e8a23a', shelter: '#2fb27c', dry: '#c3ccd8' };
 const LABEL = { evacuate: 'Evacuate first', verify: 'Verify height', shelter: 'Shelter in place', dry: 'Dry' };
 const CLASS = { geometry_derived: 'derived from mapped geometry', model_estimated: 'model estimate', mapped_historical: 'mapped historical', observed_historical: 'observed historical (satellite)',
   verified_current: 'verified current', unverified_current: 'unverified current', unavailable: 'unavailable' };
@@ -55,7 +55,7 @@ export async function installNetra(api) {
   function select(b, nearby = null) {
     N.sel = b; N.nearby = nearby;
     const lines = [];
-    if (b) lines.push(feat('LineString', b.ring, { c: '#ffffff' }));
+    if (b) lines.push(feat('LineString', b.ring, { c: '#142033' }));
     for (const x of nearby ?? []) lines.push(feat('LineString', x.b.ring, { c: '#f2b544' }));
     map.getSource('n-sel').setData(fc(lines));
     state.tab = 'buildings'; drawPanel();
@@ -140,6 +140,9 @@ export async function installNetra(api) {
         <select id="nWl"><option value="">Go to a government waterlogging point…</option>${pts.map((p, i) => `<option value="${i}">${esc(p.name)}</option>`).join('')}</select>
         <select id="nDemo"><option value="">Simulated incident (demo)…</option>${N.ev.incidents.map((d) => `<option value="${esc(d.scenario_id)}" ${N.incident === d.scenario_id ? 'selected' : ''}>${esc(d.scenario_id)} · ${d.reported_people} people · ${d.reported_water_depth_m} m</option>`).join('')}</select></div></div>
       ${selCard}
+      <details class="card"><summary><b>Compare the simulated incidents</b> (Malik's multi-incident comparison)</summary><table style="margin-top:6px"><tr><th>Incident</th><th class="n">People</th><th class="n">Children / seniors</th><th class="n">Water</th><th class="n">Flow</th><th>Assessment</th></tr>
+        ${N.ev.incidents.map((d) => { const r = readiness(incidentFromDemo(d)); return `<tr><td class="small">${esc(d.scenario_id)}</td><td class="n">${d.reported_people}</td><td class="n">${d.reported_children} / ${d.reported_seniors}</td><td class="n">${d.reported_water_depth_m} m</td><td class="n">${d.reported_flow_velocity_mps} m/s</td><td class="small">${r.rescuePriority === 'not_assessed' ? 'not ranked: unverified' : 'ready for review'}</td></tr>`; }).join('')}</table>
+        <div class="muted small">Synthetic demonstration reports. As in AI-NETRA, incidents are compared side by side but never ranked automatically: a person verifies each one first.</div></details>
       <div class="card"><h4>Musi scenario plan</h4>
       <div style="display:flex;gap:8px;align-items:center"><span class="small">Musi stage</span><input type="range" id="nStage" min="0" max="5" step="0.5" value="${N.stage}" style="flex:1"><b class="small" id="nStageOut">${N.stage} m</b></div>
       <div class="muted small">Forecast default ${fs.stage} m: GloFAS Musi discharge ${['normal', 'above its 95th percentile', 'above its 99th percentile'][fs.level]}. <button class="btn" data-n="reset">Use forecast</button></div>
@@ -151,8 +154,7 @@ export async function installNetra(api) {
   };
 
   document.addEventListener('click', (e) => {
-    const tabBtn = e.target.closest('[data-t]');
-    if (tabBtn && tabBtn.dataset.t !== 'buildings') show(false);
+    if (e.target.closest('[data-t],[data-step]')) setTimeout(() => { if (state.tab !== 'buildings') show(false); }, 0); // tab or step buttons
     const t = e.target.closest('button');
     if (!t) return;
     if (t.dataset.nsel) { const b = byId.get(t.dataset.nsel); select(b); map.flyTo({ center: b.ring[0], zoom: 17.4, pitch: 55, padding: PAD, duration: 1200 }); }

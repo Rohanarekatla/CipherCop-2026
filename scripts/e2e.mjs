@@ -22,7 +22,10 @@ try {
   await page.goto(`${base}/`);
   await page.waitForFunction(() => /\d+%/.test(document.querySelector('#kpis')?.innerText ?? ''), null, { timeout: 90000 });
   check(true, 'plan built and KPIs shown');
+  const STEP = { timeline: 'prepare', pairs: 'prepare', teams: 'prepare', alerts: 'prepare', reports: 'respond', buildings: 'respond', route: 'respond', live: 'respond',
+    water: 'prevent', fixit: 'prevent', vision: 'prevent', copilot: 'proof', evidence: 'proof', method: 'proof' };
   const tab = async (t, expect) => {
+    await page.click(`[data-step="${STEP[t]}"]`); // the four workflow steps show their own tabs
     await page.click(`[data-t="${t}"]`);
     await page.waitForFunction((e) => document.querySelector('#panel').innerText.includes(e), expect, { timeout: 90000 });
     check(true, `tab "${t}" shows "${expect}"`);
@@ -33,6 +36,7 @@ try {
   await tab('alerts', 'CAP');
   await tab('evidence', 'Can the forecast tell us when');
   await tab('method', 'Where AI is used');
+  await tab('copilot', 'AI assistant');
   await tab('reports', 'Citizen reports');
   await page.fill('#rep', 'People trapped on the terrace in Uppal, water rising');
   await page.click('#send');

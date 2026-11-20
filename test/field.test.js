@@ -50,5 +50,8 @@ test('server: static files, field inputs, WhatsApp verification, and no crash on
     assert.equal((await (await fetch(u('/api/inbox'))).json()).length, 2);
     assert.equal(await (await fetch(u('/api/whatsapp?hub.mode=subscribe&hub.verify_token=surgeforce-demo&hub.challenge=42'))).text(), '42');
     assert.equal((await fetch(u('/api/whatsapp?hub.mode=subscribe&hub.verify_token=wrong&hub.challenge=1'))).status, 403);
+    assert.equal((await (await fetch(u('/firesight/api/notify'))).json()).service, 'firesight-notify', 'FireSight alert service runs locally');
+    assert.equal((await post('/api/notify', { role: 'NOBODY', text: 'x' })).status, 400);
+    assert.equal((await (await post('/api/notify', { role: 'POLICE', text: 'Flood alert test' })).json()).ok, false, 'no Twilio targets in tests: nothing sent');
   } finally { srv.kill(); }
 });

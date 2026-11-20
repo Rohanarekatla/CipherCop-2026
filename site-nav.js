@@ -10,10 +10,10 @@
   const css = document.createElement('style');
   css.textContent = `
   #hz{position:fixed;right:22px;bottom:18px;z-index:100000;display:flex;align-items:center;gap:10px;padding:6px 8px;
-    border-radius:999px;background:rgba(8,16,28,.92);border:1px solid #2a4c7d;box-shadow:0 8px 30px rgba(0,0,0,.45);font:600 13px/1 Inter,system-ui,Segoe UI,Arial,sans-serif;
-    color:#cfe0f0;user-select:none;-webkit-user-select:none;touch-action:none;backdrop-filter:blur(10px)}
+    border-radius:999px;background:#fff;border:1px solid #cbd5e1;box-shadow:0 8px 24px rgba(16,32,56,.16);font:600 13px/1 Inter,system-ui,Segoe UI,Arial,sans-serif;
+    color:#142033;user-select:none;-webkit-user-select:none;touch-action:none;backdrop-filter:blur(10px)}
   #hz .lbl{padding:0 4px;cursor:pointer;opacity:.6;transition:opacity .2s}#hz .lbl.on{opacity:1}
-  #hz .track{position:relative;width:64px;height:30px;border-radius:999px;background:linear-gradient(90deg,#1b5d9e,#c2410c);cursor:grab;outline:none}
+  #hz .track{position:relative;width:64px;height:30px;border-radius:999px;background:linear-gradient(90deg,#1d63d8,#e2581f);cursor:grab;outline:none}
   #hz .track:focus-visible{box-shadow:0 0 0 3px #4fb3ff88}
   #hz .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.4);
     transition:transform .35s cubic-bezier(.2,.8,.2,1);display:grid;place-items:center;font-size:13px}

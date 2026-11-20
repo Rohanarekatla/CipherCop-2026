@@ -15,7 +15,7 @@ An AI command centre that decides, **before** a storm hits Hyderabad, which poli
 
 ## One flood command centre, with fire one slide away
 
-Run `npm start` and open http://localhost:8520.
+Run `npm start` and open http://localhost:8520. The side panel follows the job in four steps: **1 Prepare** (before the rain), **2 Respond** (during the flood), **3 Prevent** (fix the causes), **4 Proof & AI** (why trust it). Every member's feature and where to find it: [docs/FEATURE_CHECK.md](docs/FEATURE_CHECK.md).
 
 - **Flood (SurgeForce + AI-NETRA, Rohan + Malik):** one product. SurgeForce decides when and where to stage teams; AI-NETRA, in the **Buildings** tab, says which buildings. Malik's 11,659 real buildings stand in 3D at their real height. Click any building for every piece of his evidence: exact identification with nearby candidates, Google height intelligence, footprint, Musi and government-waterlogging proximity, the official October 2020 flood map, Sentinel-1 radar change, source investigation, evidence quality and provenance, and his rescue-readiness rule (no rescue priority without verified current evidence, never automated dispatch). The Musi forecast sets the scenario plan: shelter in place, evacuate first or verify.
 - **Fire (FireSight, Aditya):** slide the **Flood / Fire** switch (bottom right; click, drag or arrow keys) and FireSight slides in over the flood centre, which keeps running underneath. `#fire` in the URL opens it directly; `/netra/` now opens the Buildings tab.

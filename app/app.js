@@ -36,16 +36,16 @@ const map = new maplibregl.Map({
   style: {
     version: 8,
     sources: {
-      base: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, maxzoom: 16, attribution: 'Tiles © Esri · data © OpenStreetMap contributors' },
+      base: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, maxzoom: 16, attribution: 'Tiles © Esri · data © OpenStreetMap contributors' },
       dem: DEM, shade: DEM, // separate source for hillshade, as MapLibre recommends
     },
     layers: [
-      { id: 'bg', type: 'background', paint: { 'background-color': '#070b11' } },
-      { id: 'base', type: 'raster', source: 'base', paint: { 'raster-opacity': 0.9, 'raster-brightness-max': 0.75, 'raster-saturation': -0.3 } },
-      { id: 'shade', type: 'hillshade', source: 'shade', paint: { 'hillshade-exaggeration': 0.6, 'hillshade-shadow-color': '#000000', 'hillshade-highlight-color': '#3a5675', 'hillshade-accent-color': '#05080c' } },
+      { id: 'bg', type: 'background', paint: { 'background-color': '#eef2f7' } },
+      { id: 'base', type: 'raster', source: 'base', paint: { 'raster-opacity': 1 } },
+      { id: 'shade', type: 'hillshade', source: 'shade', paint: { 'hillshade-exaggeration': 0.35, 'hillshade-shadow-color': '#7a8799', 'hillshade-highlight-color': '#ffffff', 'hillshade-accent-color': '#9aa6b5' } },
     ],
     terrain: { source: 'dem', exaggeration: 3 },
-    sky: { 'sky-color': '#0a1424', 'horizon-color': '#1b3150', 'fog-color': '#070b11', 'sky-horizon-blend': 0.7, 'horizon-fog-blend': 0.5, 'fog-ground-blend': 0.25 },
+    sky: { 'sky-color': '#cfe3f7', 'horizon-color': '#eef4fb', 'fog-color': '#f4f7fb', 'sky-horizon-blend': 0.7, 'horizon-fog-blend': 0.5, 'fog-ground-blend': 0.25 },
   },
 });
 new ResizeObserver(() => map.resize()).observe(document.querySelector('.left'));
@@ -163,8 +163,8 @@ function drawFan() {
     + series.map((s) => `<path d="${line(s)}" fill="none" stroke="#4fb3ff" stroke-opacity=".14" stroke-width="1"/>`).join('')
     + `<path d="${band}" fill="#4fb3ff" fill-opacity=".16"/>`
     + `<path d="${line(p50)}" fill="none" stroke="#4fb3ff" stroke-width="2"/>`
-    + (obs ? `<path d="${line(obs)}" fill="none" stroke="#ffffff" stroke-width="2"/>` : '')
-    + `<line id="fanX" y1="${T}" y2="${H - B}" stroke="#8a9db1" stroke-width="1" visibility="hidden"/>`
+    + (obs ? `<path d="${line(obs)}" fill="none" stroke="#142033" stroke-width="2"/>` : '')
+    + `<line id="fanX" y1="${T}" y2="${H - B}" stroke="#5b6b80" stroke-width="1" visibility="hidden"/>`
     + `<rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent" id="fanHit"/>`;
   const tip = $('#fanTip'), cross = $('#fanX');
   $('#fanHit').onmousemove = (e) => {
@@ -190,7 +190,7 @@ function drawKpis() {
   const day = c.outlook.reduce((a, o) => (o.p > a.p ? o : a), c.outlook[0]);
   $('#kpis').innerHTML = k('Flood-level rain somewhere in city', pct(c.p1), `${m.members} forecasts · act at ≥ ${pct(c.costLoss)}`, c.onset != null ? 'bad' : 'good')
     + k('Worst day: ≥ 30 mm anywhere', pct(day.p), `${day.day} · P90 ${day.p90} mm`)
-    + k('Counterparts', m.activePairs ? `${m.activePairs} active` : `${m.designated} ready`, m.activePairs ? `${m.confirmed} sectors confirmed` : 'pre-designated, activate on report')
+    + k('Backup stations', m.activePairs ? `${m.activePairs} active` : `${m.designated} ready`, m.activePairs ? `${m.confirmed} sectors confirmed` : 'pre-designated, activate on report')
     + team(m.met, 'Monsoon Emergency Teams') + team(m.drf, 'DRF rescue teams')
     + k('Underpasses to close', m.underpassesClosed, 'before water arrives')
     + k('Actions', p.actions.length, m.lateActions ? `${m.lateActions} already late` : 'all on time', m.lateActions ? 'bad' : '');
@@ -396,8 +396,21 @@ function actionCard(a) {
       ${a.kind === 'alert' ? `<button class="btn" data-cap="${a.id}">CAP XML</button>` : ''}</div></div>`;
 }
 
+// the side panel is organised as four steps; each tab belongs to one
+const STEPS = { prepare: ['timeline', 'pairs', 'teams', 'alerts'], respond: ['reports', 'buildings', 'route', 'live'],
+  prevent: ['water', 'fixit', 'vision'], proof: ['copilot', 'evidence', 'method'] };
+const STEP_OF = Object.fromEntries(Object.entries(STEPS).flatMap(([s, tabs]) => tabs.map((t) => [t, s])));
+const STEP_HINT = {
+  prepare: 'Before the rain: the forecast sets when to act. Approve each move: teams staged, backup stations named, underpasses closed, public alerts.',
+  respond: 'During the flood: citizen reports confirm where it floods, AI-NETRA picks the buildings to reach, and routes avoid flooded roads.',
+  prevent: 'Between storms: see where water goes and why spots flood, track blocked drains and encroachments, and read flood signals from cameras.',
+  proof: 'Why trust it: ask the AI assistant (it answers only from the planner), see the backtest and simulation, and how it works.',
+};
 function drawPanel() {
-  document.querySelectorAll('#tabs button, #tabs2 button').forEach((b) => b.classList.toggle('on', b.dataset.t === state.tab));
+  const step = STEP_OF[state.tab] ?? 'prepare';
+  document.querySelectorAll('#steps button').forEach((b) => b.classList.toggle('on', b.dataset.step === step));
+  document.querySelectorAll('#tabs button').forEach((b) => { b.classList.toggle('on', b.dataset.t === state.tab); b.classList.toggle('hide', STEP_OF[b.dataset.t] !== step); });
+  $('#stephint').textContent = STEP_HINT[step];
   if (!state.plan) return;
   $('#panel').innerHTML = panels[state.tab]?.() ?? '<p class="muted">Loading…</p>';
   if (state.tab === 'evidence' && !state.sim) {
@@ -481,6 +494,7 @@ document.addEventListener('click', async (e) => {
   if (t.parentElement.id === 'mode') { state.mode = t.dataset.v; setSeg('#mode', t); return load(); }
   if (t.parentElement.id === 'quant') { state.cl = Number(t.dataset.v); setSeg('#quant', t); return load(); }
   if (t.dataset.t) { state.tab = t.dataset.t; return drawPanel(); }
+  if (t.dataset.step) { state.tab = STEPS[t.dataset.step][0]; return drawPanel(); }
   if (t.dataset.ok) return approve(t.dataset.ok.split(','), 'approved');
   if (t.dataset.no) return approve(t.dataset.no.split(','), 'rejected');
   if (t.dataset.approveStage) return approve(timelineItems(state.plan.actions).filter((a) => a.stage === t.dataset.approveStage && !a.approval).flatMap((a) => a.ids), 'approved');

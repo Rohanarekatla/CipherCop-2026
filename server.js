@@ -3,6 +3,7 @@
 //   POST /api/report    {text, lat?, lon?, photo?}          citizen report from the public page (report.html)
 //   GET/POST /api/whatsapp                                 WhatsApp Cloud API webhook (verify + incoming messages)
 //   POST /api/sensor    {id, levelCm, lat?, lon?}          water-level sensor or camera-read gauge
+//   GET/POST /api/notify  (also /firesight/api/notify)    FireSight alert delivery (Twilio / Telegram)
 //   GET  /api/inbox?since=ISO                              what the command centre polls
 // Inputs are kept in memory only (no database); the AI that reads them runs in the commander's browser.
 // npm start -> http://localhost:8520
@@ -10,6 +11,16 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+// FireSight's alert delivery (Aditya/api/notify.js, a Vercel function: Twilio voice / SMS, Telegram) runs here
+// unchanged behind a small Vercel-style req/res adapter. Without Twilio keys it reports that nothing was sent.
+const notify = createRequire(import.meta.url)('./Aditya/api/notify.js');
+async function runNotify(req, res) {
+  if (req.method === 'POST') { try { req.body = await body(req); } catch (e) { return json(res, 400, { error: e.message }); } }
+  const out = { status: (c) => { res.statusCode = c; return out; }, json: (o) => json(res, res.statusCode || 200, o), send: (t) => res.end(t), setHeader: (k, v) => res.setHeader(k, v) };
+  return notify(req, out);
+}
 
 const PORT = Number(process.env.PORT) || 8520;
 const ROOT = fileURLToPath(new URL('.', import.meta.url)); // keeps Windows paths valid
@@ -70,6 +81,7 @@ createServer(async (req, res) => {
   let url;
   try { url = new URL(req.url, 'http://x'); if (url.host !== 'x') throw new Error('bad path'); } // "//host/..." would parse as another host
   catch { res.writeHead(400); return res.end('bad request'); }
+  if (/^\/(firesight\/)?api\/notify$/.test(url.pathname)) return runNotify(req, res).catch((e) => json(res, 500, { error: e.message }));
   if (url.pathname.startsWith('/api/')) return api(req, res, url).catch((e) => json(res, 500, { error: e.message }));
   let path;
   try { path = decodeURIComponent(url.pathname).replace(/^\/+/, '') || 'index.html'; } catch { res.writeHead(400); return res.end('bad request'); }
