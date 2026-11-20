@@ -1,6 +1,6 @@
 # SurgeForce: one command centre for Hyderabad's monsoon
 
-**CipherCop 2026 · Track 02 (AI for disaster response) · Team AI-vengers**
+**CipherCop 2026 · Track 2: AI for Disaster Resilience · Team AI-vengers** (Mallikarjuna Reddy, Sai Adurti, Rohan A, Sriram Aditya)
 
 An AI command centre that decides, **before** a storm hits Hyderabad, which police, GHMC Monsoon Emergency Teams, HYDRAA rescue teams and volunteers should move where and when. A human commander approves every move. It runs on real public data, and it is tested.
 
