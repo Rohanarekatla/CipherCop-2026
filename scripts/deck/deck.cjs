@@ -114,6 +114,18 @@ txt(s, bullets(['Malik’s rule: 6 incident fields (people, depth, flow…) must
 callout(s, 'Missing evidence means no priority, never a guess. A human always decides.', r.y + r.h + 0.35);
 s.addNotes('Same rules as Malik’s assess_rescue_readiness.py, ported to the browser and covered by tests.');
 
+// 7f2 original AI-NETRA prototype (frames from its recorded demo, docs/demo/demo_NETRA.mp4 in the original repo)
+s = pres.addSlide(); s.background = { color: 'F2F7FB' }; badge(s, 2, 'RESPOND');
+title(s, 'Where it started: the AI-NETRA prototype');
+[['identify', 'Click a building: exact footprint match, evidence counts and the gaps still missing'],
+ ['proximity', 'Musi distance and nearest government waterlogging point, with method and limits'],
+ ['incidents', 'Three simulated incidents with Sentinel-1 radar evidence and a source investigation'],
+ ['waterlogging', 'GHMC waterlogging locations on the map, and the multi-incident comparison']]
+  .forEach(([f, c], i) => { const x = 0.7 + (i % 2) * 6.05, y = 1.45 + Math.floor(i / 2) * 2.85;
+    const q = pic(s, `img/netra-demo-${f}.png`, x, y, 5.85, 2.4, c, 'left');
+    txt(s, c, { x, y: q.y + q.h + 0.06, w: 5.85, h: 0.3, fontSize: 11, color: MUTED }); });
+s.addNotes('Frames from the recorded demo of the original AI-NETRA Next.js + FastAPI app. All of these features now run inside the merged command centre.');
+
 // 7g step 3 prevent: water
 s = pres.addSlide(); s.background = { color: 'F2F7FB' }; badge(s, 3, 'PREVENT');
 title(s, 'Between storms: follow the water, fix the cause');
@@ -147,14 +159,48 @@ txt(s, bullets(['AI assistant calls the planner’s tested tools; every number c
 callout(s, 'Forecasts are skilful for WHEN (ROC 0.81) and not for WHERE, so WHERE comes from terrain and citizens.', r.y + r.h + 0.35);
 s.addNotes('Step 4. Trust comes from tools and evidence, not from the model’s word.');
 
-// 7j FireSight
+// 7j FireSight: prevent (risk model)
 s = pres.addSlide(); s.background = { color: 'F2F7FB' };
-title(s, 'Slide the switch: FireSight for fires');
-pic(s, 'img/fire.png', 0.7, 1.45, 8.4, 4.73, 'FireSight incident window: CCTV frames, severity, required actions', 'left');
-card(s, 9.4, 1.45, 3.3, 4.73, WHITE);
-txt(s, bullets(['Flood / Fire switch, bottom right: one slide, no new page', 'Fire-risk map of the Old City, tender reach, spread clusters', 'CCTV incident detection with severity level', 'Responder checklist: dispatch, green corridor, evacuation, hospitals, power cut', 'Approved alerts by Twilio voice/SMS and Telegram']), { x: 9.6, y: 1.65, w: 2.95, h: 4.4, fontSize: 13 });
-foot(s, 'FireSight buildings and incidents are generated demo data, labelled in the app. Its risk weights also score the 11,659 real buildings.');
-s.addNotes('Aditya’s FireSight, unchanged, one slide away from the flood centre.');
+s.addShape(pres.ShapeType.roundRect, { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fill: { color: 'D9822B' }, line: { color: 'D9822B' }, rectRadius: 0.08 }); s.addText('FIRE  ·  PREVENT', { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fontFace: B, fontSize: 12, bold: true, color: WHITE, align: 'center', valign: 'middle', margin: 0 }); s._b = true;
+title(s, 'Slide to Fire: see the risk before it starts');
+pic(s, 'img/fs-model.png', 0.7, 1.45, 8.4, 4.73, 'FireSight risk map of the Old City with what the model learned', 'left');
+card(s, 9.4, 1.45, 3.3, 1.55, WHITE);
+txt(s, '0.74', { x: 9.6, y: 1.5, w: 1.6, h: 0.75, fontFace: H, fontSize: 36, bold: true, color: 'D9822B' });
+txt(s, 'AUC on held-out buildings (random forest on 2,315 buildings, 374 past fires)', { x: 9.6, y: 2.2, w: 2.95, h: 0.75, fontSize: 11, color: MUTED });
+card(s, 9.4, 3.15, 3.3, 3.03, WHITE);
+txt(s, 'What drives fire risk', { x: 9.6, y: 3.25, w: 3, h: 0.35, fontSize: 14, bold: true });
+[['Mixed use / godown', 22.2], ['Building age', 20.4], ['Built-up area', 12.1], ['Buildings within 50 m', 9.9], ['Gap to nearest building', 8.9], ['Drive time from station', 8.5]]
+  .forEach(([l, w], i) => { const y = 3.68 + i * 0.4; txt(s, l, { x: 9.6, y, w: 2.0, h: 0.3, fontSize: 11 }); s.addShape(pres.ShapeType.rect, { x: 11.55, y: y + 0.07, w: (w / 22.2) * 0.75, h: 0.16, fill: { color: 'D9822B' }, line: { color: 'D9822B' } }); txt(s, `${w}%`, { x: 12.32, y, w: 0.4, h: 0.3, fontSize: 10, color: MUTED, align: 'right' }); });
+foot(s, 'FireSight buildings and past fires are generated demo data, labelled in the app. Its learned weights also score the 11,659 real OSM buildings in the flood centre.');
+s.addNotes('One slide of the switch at the bottom right brings in FireSight over the flood centre. Day and night risk differ because occupancy differs.');
+
+// 7k FireSight: four risk layers
+s = pres.addSlide(); s.background = { color: WHITE };
+s.addShape(pres.ShapeType.roundRect, { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fill: { color: 'D9822B' }, line: { color: 'D9822B' }, rectRadius: 0.08 }); s.addText('FIRE  ·  PREVENT', { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fontFace: B, fontSize: 12, bold: true, color: WHITE, align: 'center', valign: 'middle', margin: 0 }); s._b = true;
+title(s, 'Four ways to read the same street');
+[['fs-risk', 'Fire risk: model score 1–10, by day or by night'],
+ ['fs-paper', 'Paper vs reality: floors above the approved plan, missing or expired fire NOC'],
+ ['fs-reach', 'Fire tender reach: roads under 6 m a tender cannot enter, drive time'],
+ ['fs-spread', 'Spread clusters: buildings joined wall to wall, where one fire becomes many']]
+  .forEach(([f, c], i) => { const x = 0.7 + (i % 2) * 6.05, y = 1.45 + Math.floor(i / 2) * 2.85;
+    const q = pic(s, `img/${f}${f.startsWith('fs-') ? '-wide' : ''}.png`, x, y, 5.85, 2.4, c, 'left');
+    txt(s, c, { x, y: q.y + q.h + 0.06, w: 5.85, h: 0.3, fontSize: 11, color: MUTED }); });
+s.addNotes('Inspectors get a ranked list: risky buildings whose records do not match, that tenders cannot reach, inside big joined clusters.');
+
+// 7l FireSight: detect and respond
+s = pres.addSlide(); s.background = { color: 'F2F7FB' };
+s.addShape(pres.ShapeType.roundRect, { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fill: { color: 'D64550' }, line: { color: 'D64550' }, rectRadius: 0.08 }); s.addText('FIRE  ·  DETECT & RESPOND', { x: 0.7, y: 0.25, w: 2.6, h: 0.36, fontFace: B, fontSize: 12, bold: true, color: WHITE, align: 'center', valign: 'middle', margin: 0 }); s._b = true;
+title(s, 'From a camera frame to a cleared fire');
+r = pic(s, 'img/fs-detect.png', 0.7, 1.45, 5.85, 3.3, 'Detect mode: live incidents ranked by level', 'left');
+pic(s, 'img/fs-incident.png', 6.75, 1.45, 5.85, 3.3, 'Incident window: CCTV frames, severity, location, hospitals and required actions', 'left');
+[['1', 'Detect', 'CCTV or a citizen report raises a fire, levelled 1 to 3'], ['2', 'Size it up', 'People inside, joined buildings, NOC status, goods stored'], ['3', 'Act', 'Dispatch, green corridor, give-way and evacuation alerts, hospitals, police, power cut'], ['4', 'Alert', 'Approved alerts go out by Twilio voice/SMS and Telegram']]
+  .forEach(([n, h, b], i) => { const x = 0.7 + i * 3.0, y = r.y + r.h + 0.3; card(s, x, y, 2.85, 1.55, WHITE);
+    s.addShape(pres.ShapeType.ellipse, { x: x + 0.15, y: y + 0.15, w: 0.45, h: 0.45, fill: { color: 'D64550' }, line: { color: 'D64550' } });
+    txt(s, n, { x: x + 0.15, y: y + 0.15, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: WHITE, align: 'center', valign: 'middle' });
+    txt(s, h, { x: x + 0.7, y: y + 0.18, w: 2.05, h: 0.4, fontSize: 15, bold: true });
+    txt(s, b, { x: x + 0.15, y: y + 0.68, w: 2.6, h: 0.82, fontSize: 11, color: MUTED }); });
+s.addNotes('Each action in the incident window is a checklist item; alerts go out only after a responder approves. The alert service runs from the local server at /firesight/api/notify.');
+
 // 5 AI table
 s = pres.addSlide(); s.background = { color: WHITE };
 title(s, 'Where AI does the work');
