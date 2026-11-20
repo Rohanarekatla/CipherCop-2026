@@ -85,7 +85,7 @@ s.addNotes('Judges will ask what is real. This slide answers it.');
 // 9 safety
 s = pres.addSlide(); s.background = { color: WHITE };
 title(s, 'Built so a commander can trust it');
-const safe = [['AI may escalate, never downgrade', 'If rules flag a report as life-threatening, the AI cannot lower it. Covered by a test.'], ['The agent cannot act', 'It drafts and recommends. Only the commander approves, and every approval is logged.'], ['Police data stays local', 'Triage runs in the browser. The agent can run on a local Llama model.'], ['Tested and automated', '19 automated tests, CI on every push, security scanning.']];
+const safe = [['AI may escalate, never downgrade', 'If rules flag a report as life-threatening, the AI cannot lower it. Covered by a test.'], ['The agent cannot act', 'It drafts and recommends. Only the commander approves, and every approval is logged.'], ['Police data stays local', 'Triage runs in the browser. The agent can run on a local Llama model.'], ['Tested and automated', '22 automated tests, CI on every push, security scanning.']];
 safe.forEach(([h, b], i) => { const x = 0.7 + (i % 2) * 6.1, y = 1.7 + Math.floor(i / 2) * 2.4; card(s, x, y, 5.8, 2.1); txt(s, h, { x: x + 0.3, y: y + 0.25, w: 5.2, h: 0.5, fontSize: 20, bold: true, color: TEAL }); txt(s, b, { x: x + 0.3, y: y + 0.85, w: 5.2, h: 1.1, fontSize: 16, color: MUTED }); });
 s.addNotes('Safety rules are non-negotiable and documented in AGENTS.md.');
 

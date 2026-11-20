@@ -13,6 +13,16 @@ An AI command centre that decides, **before** a storm hits Hyderabad, which poli
 3. An exact min-cost-flow optimiser stages teams and pre-assigns counterpart stations (Japan's *taiko shien*). A Monte Carlo simulation shows rescues reached within 30 minutes rise from 83% to 96%.
 4. An AI agent (Claude Opus 5.5, or a local Llama so police data never leaves the building) answers the commander only by calling the planner's tools, so every number is grounded. It cannot approve or send anything.
 
+## One website, three tools
+
+Run `npm start` and open http://localhost:8520. A switcher at the bottom of every page moves between the three tools:
+
+| URL | Tool | From |
+|---|---|---|
+| `/` | **SurgeForce** command centre (forecast, plan, reports, agent, Buildings tab) | Rohan |
+| `/firesight/` | **FireSight** fire-risk map, incident response and alert flow (demo data) | Aditya |
+| `/netra/` | **AI-NETRA** building intelligence map: click any of 11,659 real buildings | Malik |
+
 ## What the merged project adds
 
 The team built three projects in parallel. This repo merges them into one app and keeps each original in its own folder.
@@ -20,8 +30,8 @@ The team built three projects in parallel. This repo merges them into one app an
 | Folder | Owner | What it is | How it feeds the main app |
 |---|---|---|---|
 | [`Rohan/`](Rohan) | Rohan | SurgeForce: forecast backtest, terrain, optimiser, simulation, AI triage, agent | The core. Lives at the repo root (`app/`, `lib/`, `data/`). |
-| [`Malik/`](Malik) | Malik | AI-NETRA-GEO: FastAPI + Next.js building intelligence on real OSM footprints, Google building heights, Musi distances, TGRAC waterlogging points | 11,659 real buildings ranked by flood exposure in the **Buildings** tab and on the map. |
-| [`Aditya/`](Aditya) | Aditya | FireSight: fire-risk map, risk model, multi-channel alert delivery | Fire-risk weights score the same real buildings; the **flood and fire together** list; alert delivery for approved alerts. |
+| [`Malik/`](Malik) | Malik | AI-NETRA-GEO: FastAPI + Next.js building intelligence on real OSM footprints, Google building heights, Musi distances, TGRAC waterlogging points | 11,659 real buildings ranked by flood exposure in the **Buildings** tab, and the AI-NETRA map at `/netra/`. |
+| [`Aditya/`](Aditya) | Aditya | FireSight: fire-risk map, risk model, multi-channel alert delivery | FireSight runs at `/firesight/`; its fire-risk weights also score the real buildings (the **flood and fire together** list); alert delivery for approved alerts. |
 
 Together: when SurgeForce confirms an area flooded, the Buildings tab shows which real buildings are most exposed, which are tall enough to be candidate refuges, and where a flood and a fire could coincide with the nearest real fire station far away or behind a flooded road. The agent has two extra tools for this (`building_exposure`, `flood_fire_hotspots`).
 
@@ -31,7 +41,7 @@ Needs Node 21 or later. Nothing to install.
 
 ```bash
 npm start       # http://localhost:8520 (static server; everything runs in the browser)
-npm test        # 19 tests: planner, simulation, AI triage, agent, buildings, fire, alert delivery
+npm test        # 22 tests: planner, simulation, AI triage, agent, buildings, fire, alert delivery
 ```
 
 Optional: `npm run fetch-data` (refresh OSM/DEM/OSRM/GloFAS), `npm run backtest`, `npm run eval:intake`, `python scripts/build-buildings.py` (rebuild the building dataset from `Malik/`). The AI agent needs `ollama serve` with `llama3.1`, or an Anthropic API key pasted in the AI Assistant tab. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

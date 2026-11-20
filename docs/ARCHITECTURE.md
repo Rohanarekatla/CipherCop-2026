@@ -16,6 +16,10 @@
                               lib/ai/agent.js: 10 tools ─► app/app.js (MapLibre UI, human approval, audit log)
 ```
 
+## One website
+
+`index.html` (SurgeForce), `firesight/index.html` (copy of the FireSight site from `Aditya/`) and `netra/index.html` (a static, backend-free version of the AI-NETRA map from `Malik/`) are served together by `server.js` and by the Pages workflow. `site-nav.js` adds the switcher with relative links, so it works on GitHub Pages under a project path. The full AI-NETRA FastAPI + Next.js stack (building polygons, Sentinel-1 evidence) stays in `Malik/` and needs Python to run. FireSight's Twilio/Telegram function (`Aditya/api/notify.js`) needs a Vercel-style host, so on static hosting FireSight shows alert delivery as unavailable.
+
 ## Layers
 
 | Layer | Files | Notes |

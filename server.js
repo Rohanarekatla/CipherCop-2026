@@ -7,11 +7,12 @@ import { fileURLToPath } from 'node:url';
 
 const PORT = Number(process.env.PORT) || 8520;
 const ROOT = fileURLToPath(new URL('.', import.meta.url)); // keeps Windows paths valid
-const PUBLIC = ['index.html', 'app/', 'lib/', 'data/']; // never serve node_modules, scripts or tests
+const PUBLIC = ['index.html', 'site-nav.js', 'app/', 'lib/', 'data/', 'netra/', 'firesight/']; // never serve node_modules, scripts or tests
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
 
 createServer(async (req, res) => {
-  const path = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html';
+  let path = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html';
+  if (path.endsWith('/')) path += 'index.html'; // netra/ and firesight/ are folders with their own index.html
   const file = normalize(join(ROOT, path));
   if (!file.startsWith(ROOT) || !PUBLIC.some((p) => path === p || path.startsWith(p))) { res.writeHead(404); return res.end('not found'); }
   try {

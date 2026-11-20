@@ -81,7 +81,7 @@ jobs:
         run: |
           node server.js &
           sleep 2
-          for p in / app/app.js app/style.css data/base.json data/hand.json data/buildings.json data/waterlogging.json data/replay/2024-09-01.json; do
+          for p in / app/app.js app/style.css data/base.json data/hand.json data/buildings.json data/waterlogging.json data/replay/2024-09-01.json netra/ netra/netra.js firesight/ firesight/respond.js site-nav.js; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8520/$p")
             echo "$code $p"; test "$code" = 200
           done
