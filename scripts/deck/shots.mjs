@@ -1,0 +1,61 @@
+// Screenshots for the deck: drives the local app (npm start on PORT, default 8530) and saves PNGs to scripts/deck/img/.
+// Run: node scripts/deck/shots.mjs   (needs Playwright as for scripts/e2e.mjs, and internet for map tiles)
+import { chromium } from 'playwright';
+const base = `http://127.0.0.1:${process.env.PORT ?? 8530}`;
+const out = (n) => new URL(`img/${n}.png`, import.meta.url).pathname;
+const STEP = { timeline: 'prepare', pairs: 'prepare', teams: 'prepare', alerts: 'prepare', reports: 'respond', buildings: 'respond', route: 'respond', live: 'respond',
+  water: 'prevent', fixit: 'prevent', vision: 'prevent', copilot: 'proof', evidence: 'proof', method: 'proof' };
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1.5 });
+const settle = (ms = 4000) => page.waitForTimeout(ms);
+const tab = async (t, expect) => {
+  await page.click(`[data-step="${STEP[t]}"]`);
+  await page.click(`[data-t="${t}"]`);
+  await page.waitForFunction((e) => document.querySelector('#panel').innerText.includes(e), expect, { timeout: 90000 });
+};
+const shot = async (n, ms) => { await settle(ms); await page.screenshot({ path: out(n) }); console.log(n); };
+await page.goto(`${base}/`);
+await page.waitForFunction(() => /\d+%/.test(document.querySelector('#kpis')?.innerText ?? ''), null, { timeout: 90000 });
+const both = async (n, ms) => { await shot(n, ms); const hz = (d) => page.evaluate((v) => { const e = document.querySelector('#hz'); if (e) e.style.visibility = v; }, d);
+  await hz('hidden'); await page.locator('#panel').screenshot({ path: out(`${n}-panel`) }); await hz(''); }; // the Flood/Fire switch would cover the panel crop
+const mapClick = async (fx, fy) => { const b = await page.locator('#map').boundingBox(); await page.mouse.click(b.x + b.width * fx, b.y + b.height * fy); };
+const soft = async (fn) => { try { await fn(); } catch (e) { console.warn('skipped:', e.message.split('\n')[0]); } };
+await tab('timeline', 'Approve'); await both('home', 8000);
+await tab('pairs', 'Pre-designated'); await both('pairs');
+await tab('teams', 'Monsoon Emergency Teams'); await both('teams');
+await tab('alerts', 'CAP'); await both('alerts');
+await tab('reports', 'Citizen reports');
+await page.click('button:has-text("Simulate 10 reports")');
+await page.fill('#rep', 'People trapped on the terrace in Uppal, water rising');
+await page.click('#send');
+await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('Uppal'), null, { timeout: 90000 });
+await both('reports', 6000);
+await tab('live', 'Official alerts (NDMA SACHET)'); await both('live');
+await tab('water', 'Official GHMC drainage data');
+await soft(async () => { await page.click('[data-w="pick-follow"]'); await settle(800); await mapClick(0.45, 0.4); });
+await both('water', 7000);
+await tab('fixit', 'After-Flood Accountability Report');
+await soft(() => page.check('[data-show="enc"]'));
+await both('fixit', 6000);
+await tab('vision', 'Computer vision, on this device'); await both('vision');
+await tab('copilot', 'AI assistant'); await both('copilot');
+await tab('evidence', 'Can the forecast tell us when'); await both('evidence', 5000);
+await tab('method', 'Where AI is used'); await both('method');
+await tab('route', 'Flood-aware routing');
+await soft(async () => { await page.click('[data-w="route"]'); await page.waitForFunction(() => /\d+(\.\d+)?\s*km/.test(document.querySelector('#panel').innerText), null, { timeout: 45000 }); });
+await both('route', 6000);
+await tab('buildings', 'AI-NETRA building rescue intelligence');
+await page.waitForFunction(() => document.querySelector('#nDemo'), null, { timeout: 60000 });
+await page.selectOption('#nDemo', { index: 1 });
+await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('Unified rescue assessment'), null, { timeout: 30000 });
+await both('building-card', 8000);
+await page.click('[data-n="verify"]');
+await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('ready for human review'), null, { timeout: 10000 });
+await page.evaluate(() => { const el = [...document.querySelectorAll('#panel *')].find((e) => e.children.length === 0 && /ready for human review/.test(e.textContent)); el?.scrollIntoView({ block: 'center' }); });
+await both('building-verified');
+await page.click('#hz .track');
+await page.waitForFunction(() => document.querySelector('#fireStage')?.classList.contains('open'), null, { timeout: 10000 });
+await shot('fire-map', 3500);
+await shot('fire', 7000);
+await page.goto(`${base}/report.html`); await shot('report-page', 3000);
+await browser.close();
